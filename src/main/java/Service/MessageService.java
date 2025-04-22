@@ -47,7 +47,8 @@ public class MessageService {
         if (msg.message_text.length() < 1) return null;
         if (msg.message_text.length() > 254) return null;
         if (!(accountDAO.getAccountById(msg.getPosted_by()) instanceof Account)) return null;
-        return messageDAO.patchMessageById(msg);
+        if (!(messageDAO.getMessageById(msg.getMessage_id()) instanceof Message)) return null;
+        return messageDAO.updateMessageById(msg);
     }
 
     public List<Message> getAllMessagesFromAccount(String posted_by_raw) {
