@@ -51,7 +51,7 @@ public class MessageDAO {
             ps.setLong(3, msg.getTime_posted_epoch());
 
             if (ps.execute()) {
-                ResultSet rs = ps.getResultSet()
+                ResultSet rs = ps.getResultSet();
                 while (rs.next()) {
                     return new Message(
                         rs.getInt("message_id"),

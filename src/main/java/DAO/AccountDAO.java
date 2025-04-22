@@ -16,18 +16,22 @@ public class AccountDAO {
      */
 
     public Account getAccountByUsername(String username) {
+        System.out.print("\n\ngetAccount( username = " + username + " )\n\n");
         Connection con = ConnectionUtil.getConnection();
         try {
             String sql = "select * from account where account.username = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
+
+            System.out.print("\n\n rs: " + rs + " \n\n");
             while(rs.next()) {
                 Account account = new Account(
                     rs.getInt("account_id"),
                     rs.getString("username"),
                     rs.getString("password")
                 );
+                System.out.print("\n\n new account:\n" + account.toString() + "\n\n");
                 return account;
             }
         } catch (SQLException e) {
@@ -58,6 +62,7 @@ public class AccountDAO {
     }
 
     public Account insertAccount(Account ac) {
+        System.out.print("\n\ninsertAccount( ac =\n" + ac.toString() + " )\n\n");
         Connection con = ConnectionUtil.getConnection();
         try {
             String sql = "insert into account(account_id, username, password) values(?,?,?)";
@@ -65,9 +70,11 @@ public class AccountDAO {
             ps.setInt(1, ac.getAccount_id());
             ps.setString(2, ac.getUsername());
             ps.setString(3, ac.getPassword());
-            Boolean result = ps.execute();
+            int rowCount = ps.executeUpdate();
+            System.out.print("\n\nps.execute() -> result = " + result + "\n\n");
             if (result) {
                 ResultSet rs = ps.getResultSet();
+                System.out.print("\n\nrs ->\n" + rs.next() + "\n\n");
                 while(rs.next()) {
                     Account account = new Account(
                         rs.getInt("account_id"),
@@ -77,7 +84,7 @@ public class AccountDAO {
                     return account;
                 }
             } else return null;
-            
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

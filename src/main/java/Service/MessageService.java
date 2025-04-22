@@ -1,7 +1,5 @@
 package Service;
 
-import static org.mockito.ArgumentMatchers.isNull;
-
 import java.util.List;
 
 import DAO.MessageDAO;
