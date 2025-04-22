@@ -11,7 +11,7 @@ public class AccountService {
         this.accountDAO = new AccountDAO();
     }
 
-    public Account registerAccount(Account ac) {
+    public Integer registerAccount(Account ac) {
         System.out.print("\n\nregisterAccount(ac):\nac.username: " + ac.getUsername() + " \nas.password: " + ac.getPassword() + "\n\n");
         if (ac.username.length() < 1) return null;
         if (ac.password.length() < 5) return null;

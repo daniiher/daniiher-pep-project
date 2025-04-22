@@ -61,29 +61,25 @@ public class AccountDAO {
         return null;
     }
 
-    public Account insertAccount(Account ac) {
+    public Integer insertAccount(Account ac) {
         System.out.print("\n\ninsertAccount( ac =\n" + ac.toString() + " )\n\n");
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
-            String sql = "insert into account(account_id, username, password) values(?,?,?)";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, ac.getAccount_id());
-            ps.setString(2, ac.getUsername());
-            ps.setString(3, ac.getPassword());
-            int rowCount = ps.executeUpdate();
-            System.out.print("\n\nps.execute() -> result = " + result + "\n\n");
-            if (result) {
-                ResultSet rs = ps.getResultSet();
-                System.out.print("\n\nrs ->\n" + rs.next() + "\n\n");
-                while(rs.next()) {
-                    Account account = new Account(
-                        rs.getInt("account_id"),
-                        rs.getString("username"),
-                        rs.getString("password")
-                    );
-                    return account;
+            Connection con = ConnectionUtil.getConnection();
+            String sql = "insert into account(username, password) values(?,?)";
+            PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, ac.getUsername());
+            ps.setString(2, ac.getPassword());
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException("Inserting account failed, no rows affected");
+            }
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);  
+                } else {
+                    throw new SQLException("Inserting account failed, no ID obtained.");
                 }
-            } else return null;
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
