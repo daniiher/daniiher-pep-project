@@ -22,7 +22,7 @@ public class AccountService {
         return accountDAO.insertAccount(ac);
     }
 
-    public Account verifyLoginAccount(Account ac) {
+    public Integer verifyLoginAccount(Account ac) {
         return accountDAO.verifyLoginAccount(ac);
     }
 }

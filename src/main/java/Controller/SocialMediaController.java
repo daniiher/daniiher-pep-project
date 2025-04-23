@@ -57,20 +57,26 @@ public class SocialMediaController {
         }
         else ctx.status(400);
     }
-
     private void loginAccountHandler(Context ctx) throws JsonProcessingException {
         Account ac = om.readValue(ctx.body(), Account.class);
-        Account verified = accountService.verifyLoginAccount(ac);
-        if (verified != null) ctx.json(verified);
+        Integer account_id = accountService.verifyLoginAccount(ac);
+        if (account_id != null) {
+            ac.setAccount_id(account_id);
+            ctx.json(ac);
+        }
         else ctx.status(401);
     }
+
+
     private void postMessageHandler(Context ctx) throws JsonProcessingException {
         Message msg = om.readValue(ctx.body(), Message.class);
-        Message posted = messageService.postMessage(msg);
-        if (posted != null) ctx.json(posted);
+        Integer message_id = messageService.postMessage(msg);
+        if (message_id != null) {
+            msg.setMessage_id(message_id);
+            ctx.json(msg);
+        }
         else ctx.status(400);
     }
-
     private void getAllMessagesHandler(Context ctx) throws JsonProcessingException {
         List<Message> messages = messageService.getAllMessages();
         ctx.json(messages);

@@ -20,8 +20,9 @@ public class MessageDAO {
      */
 
     public List<Message> getAllMessages() {
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message";
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -40,27 +41,28 @@ public class MessageDAO {
         return null;
     }
 
-    public Message insertMessage(Message msg) {
-        Connection con = ConnectionUtil.getConnection();
+    public Integer insertMessage(Message msg) {
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "insert into message(posted_by, message_text, time_posted_epoch) values(?,?,?)";
-            PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
 
             ps.setInt(1, msg.getPosted_by());
             ps.setString(2, msg.getMessage_text());
             ps.setLong(3, msg.getTime_posted_epoch());
 
-            if (ps.execute()) {
-                ResultSet rs = ps.getResultSet();
-                while (rs.next()) {
-                    return new Message(
-                        rs.getInt("message_id"),
-                        rs.getInt("posted_by"),
-                        rs.getString("message_text"),
-                        rs.getLong("time_posted_epoch")
-                    );
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException("Inserting message failed, no rows affected");
+            }
+            try ( ResultSet genKey = ps.getGeneratedKeys() ) {
+                
+                if (genKey.next()) {
+                    return genKey.getInt("message_id");
+                } else {
+                    throw new SQLException("Inserting message failed, no ID obtained.");
                 }
-            } else return null;
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -69,8 +71,9 @@ public class MessageDAO {
     }
 
     public Message getMessageById(int message_id) {
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, message_id);
@@ -90,8 +93,9 @@ public class MessageDAO {
     }
 
     public Message deleteMessageById(int message_id) {
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "delete from message where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, message_id);
@@ -115,8 +119,9 @@ public class MessageDAO {
     }
 
     public Message updateMessageById(Message msg) {
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "update message set message_text = ?, time_posted_epoch = ? where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
 
@@ -143,8 +148,9 @@ public class MessageDAO {
     }
 
     public List<Message> getAllMessagesFromAccount(int posted_by) {
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message where message.posted_by = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, posted_by);

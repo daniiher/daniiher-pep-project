@@ -17,8 +17,9 @@ public class AccountDAO {
 
     public Account getAccountByUsername(String username) {
         System.out.print("\n\ngetAccount( username = " + username + " )\n\n");
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "select * from account where account.username = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, username);
@@ -41,8 +42,9 @@ public class AccountDAO {
     }
 
     public Account getAccountById(int posted_by) {
-        Connection con = ConnectionUtil.getConnection();
+        
         try {
+            Connection con = ConnectionUtil.getConnection();
             String sql = "select * from account where account.account_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, posted_by);
@@ -73,9 +75,9 @@ public class AccountDAO {
             if (ps.executeUpdate() == 0) {
                 throw new SQLException("Inserting account failed, no rows affected");
             }
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);  
+            try ( ResultSet genKey = ps.getGeneratedKeys() ) {
+                if (genKey.next()) {
+                    return genKey.getInt("account_id");  
                 } else {
                     throw new SQLException("Inserting account failed, no ID obtained.");
                 }
@@ -87,21 +89,16 @@ public class AccountDAO {
         return null;
     }
 
-    public Account verifyLoginAccount(Account ac) {
-        Connection con = ConnectionUtil.getConnection();
+    public Integer verifyLoginAccount(Account ac) {
         try {
-            String sql = "select * from account where account.username = ? and account.password = ?";
+            Connection con = ConnectionUtil.getConnection();
+            String sql = "select account_id from account where account.username = ? and account.password = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, ac.getUsername());
             ps.setString(2, ac.getPassword());
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
-                Account account = new Account(
-                    rs.getInt("account_id"),
-                    rs.getString("username"),
-                    rs.getString("password")
-                );
-                return account;
+                return rs.getInt("account_id");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

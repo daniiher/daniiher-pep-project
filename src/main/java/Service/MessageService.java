@@ -22,7 +22,7 @@ public class MessageService {
         return messageDAO.getAllMessages();
     }
 
-    public Message postMessage(Message msg) {
+    public Integer postMessage(Message msg) {
         if (msg.message_text.length() < 1) return null;
         if (msg.message_text.length() > 254) return null;
         if (!(accountDAO.getAccountById(msg.getPosted_by()) instanceof Account)) return null;
