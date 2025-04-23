@@ -93,8 +93,8 @@ public class SocialMediaController {
     }
     private void patchMessageHandler(Context ctx) throws JsonProcessingException {
         Message msg = om.readValue(ctx.body(), Message.class);
-        Message patched = messageService.postMessage(msg);
-        if (patched != null) ctx.json(patched);
+        Boolean patched = messageService.patchMessage(msg);
+        if (patched == true) ctx.json(msg);
         else ctx.status(400);
     }
     private void getAllMessagesFromAccountHandler(Context ctx) throws JsonProcessingException {

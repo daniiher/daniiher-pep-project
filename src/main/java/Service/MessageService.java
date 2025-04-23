@@ -41,11 +41,11 @@ public class MessageService {
         return messageDAO.deleteMessageById(id.intValue());
     }
 
-    public Message patchMessage(Message msg) {
-        if (msg.message_text.length() < 1) return null;
-        if (msg.message_text.length() > 254) return null;
-        if (!(accountDAO.getAccountById(msg.getPosted_by()) instanceof Account)) return null;
-        if (!(messageDAO.getMessageById(msg.getMessage_id()) instanceof Message)) return null;
+    public Boolean patchMessage(Message msg) {
+        if (msg.message_text.length() < 1) return false;
+        if (msg.message_text.length() > 254) return false;
+        if ( (accountDAO.getAccountById(msg.getPosted_by())).getAccount_id() == 0 ) return false;
+        if ( (messageDAO.getMessageById(msg.getMessage_id())).getMessage_id() == 0 ) return false;
         return messageDAO.updateMessageById(msg);
     }
 

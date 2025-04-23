@@ -71,7 +71,8 @@ public class MessageDAO {
     }
 
     public Message getMessageById(int message_id) {
-        
+        System.out.println("\n\ngetMessageById: message_id input:\n" + message_id + "\n\n");
+
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message where message_id = ?";
@@ -79,12 +80,19 @@ public class MessageDAO {
             ps.setInt(1, message_id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                return new Message(
+                Message msg = new Message(
                     rs.getInt("message_id"),
                     rs.getInt("posted_by"),
                     rs.getString("message_text"),
                     rs.getLong("time_posted_epoch")
                 );
+                System.out.println("\n\ngetMessageById: new message:\n" + msg.toString() + "\n\n");
+                return msg; /*new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                ); */
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -118,7 +126,7 @@ public class MessageDAO {
         return null;
     }
 
-    public Message updateMessageById(Message msg) {
+    public Boolean updateMessageById(Message msg) {
         
         try {
             Connection con = ConnectionUtil.getConnection();
@@ -129,22 +137,17 @@ public class MessageDAO {
             ps.setLong(2, msg.getTime_posted_epoch());
             ps.setInt(3, msg.getMessage_id());
 
-            if (ps.execute()) {
-                ResultSet rs = ps.getResultSet();
-                while (rs.next()) {
-                    return new Message(
-                        rs.getInt("message_id"),
-                        rs.getInt("posted_by"),
-                        rs.getString("message_text"),
-                        rs.getLong("time_posted_epoch")
-                    );
-                }
-            } else return null;
+            int affectedRows = ps.executeUpdate();
+            switch (affectedRows) {
+                case 0: throw new SQLException("Updating message failed, no rows affected");
+                case 1: return true;
+                default: return false;
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        return false;
     }
 
     public List<Message> getAllMessagesFromAccount(int posted_by) {
