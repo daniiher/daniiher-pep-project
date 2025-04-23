@@ -42,10 +42,11 @@ public class MessageService {
     }
 
     public Boolean patchMessage(Message msg) {
-        if (msg.message_text.length() < 1) return false;
-        if (msg.message_text.length() > 254) return false;
+        System.out.print("\n\npatchMessage: msg: " + msg.toString() + "\n\n");
+        if (msg.message_text.length() < 1 | msg.message_text.length() > 254) return false;
         if ( (accountDAO.getAccountById(msg.getPosted_by())).getAccount_id() == 0 ) return false;
         if ( (messageDAO.getMessageById(msg.getMessage_id())).getMessage_id() == 0 ) return false;
+        System.out.print("\n\npatchMessage: goto messageDAO\n");
         return messageDAO.updateMessageById(msg);
     }
 

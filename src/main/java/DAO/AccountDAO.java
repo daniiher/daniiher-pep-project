@@ -42,7 +42,8 @@ public class AccountDAO {
     }
 
     public Account getAccountById(int posted_by) {
-        
+        System.out.print("\n\ngetAccountById:  posted_by = " + posted_by + " )\n\n");
+
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "select * from account where account.account_id = ?";
@@ -55,6 +56,7 @@ public class AccountDAO {
                     rs.getString("username"),
                     rs.getString("password")
                 );
+                System.out.print("\n\n found account:\n" + account.toString() + "\n\n");
                 return account;
             }
         } catch (SQLException e) {
