@@ -42,7 +42,7 @@ public class SocialMediaController {
         app.get("/messages", this::getAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
-        app.patch("/messages", this::patchMessageHandler);
+        app.patch("/messages/{message_id}", this::patchMessageHandler);
         app.get("/accounts/{account_id}/messages", this::getAllMessagesFromAccountHandler);
         return app;
     }
@@ -93,7 +93,10 @@ public class SocialMediaController {
     }
     private void patchMessageHandler(Context ctx) throws JsonProcessingException {
         Message msg = om.readValue(ctx.body(), Message.class);
-        Boolean patched = messageService.patchMessage(msg);
+        String id_raw = ctx.pathParam("message_id");
+        System.out.print("\n\npatchMessageHandler: msg: " + msg.toString() + "\n");
+        Boolean patched = messageService.patchMessage(msg, id_raw);
+        System.out.print("\n\npatchMessageHandler: patched: " + patched + "\n");
         if (patched == true) ctx.json(msg);
         else ctx.status(400);
     }

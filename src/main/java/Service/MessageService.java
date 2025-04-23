@@ -41,12 +41,14 @@ public class MessageService {
         return messageDAO.deleteMessageById(id.intValue());
     }
 
-    public Boolean patchMessage(Message msg) {
+    public Boolean patchMessage(Message msg, String message_id_raw) {
         System.out.print("\n\npatchMessage: msg: " + msg.toString() + "\n\n");
+        Integer id = Conversions.stringToInteger(message_id_raw);
+        if (id == null) return false;
         if (msg.message_text.length() < 1 | msg.message_text.length() > 254) return false;
-        if ( (accountDAO.getAccountById(msg.getPosted_by())).getAccount_id() == 0 ) return false;
         if ( (messageDAO.getMessageById(msg.getMessage_id())).getMessage_id() == 0 ) return false;
         System.out.print("\n\npatchMessage: goto messageDAO\n");
+        msg.setMessage_id(id);
         return messageDAO.updateMessageById(msg);
     }
 
