@@ -20,7 +20,6 @@ public class MessageDAO {
      */
 
     public List<Message> getAllMessages() {
-        
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message";
@@ -35,6 +34,8 @@ public class MessageDAO {
                     rs.getLong("time_posted_epoch")
                 ));
             }
+            return messages;
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -75,7 +76,9 @@ public class MessageDAO {
             Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
+
             ps.setInt(1, msg_id);
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Message msg = new Message(
@@ -92,34 +95,28 @@ public class MessageDAO {
         return null;
     }
 
-    public Message deleteMessageById(int message_id) {
-        
+    public boolean deleteMessageById(int message_id) {
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "delete from message where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
+
             ps.setInt(1, message_id);
 
-            if (ps.execute()) {
-                ResultSet rs = ps.getResultSet();
-                while (rs.next()) {
-                    return new Message(
-                        rs.getInt("message_id"),
-                        rs.getInt("posted_by"),
-                        rs.getString("message_text"),
-                        rs.getLong("time_posted_epoch")
-                    );
-                }
-            } else return null;
+            int affectedRows = ps.executeUpdate();
+            switch (affectedRows) {
+                case 0: return false;
+                case 1: return true;
+                default: throw new SQLException("deleteMessageById: affectedRows not equal to 0 or 1.");
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        return false;
     }
 
     public Boolean updateMessageById(String msg_text, int msg_id) {
-        
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "update message set message_text = ? where message_id = ?";
@@ -132,7 +129,7 @@ public class MessageDAO {
             switch (affectedRows) {
                 case 0: throw new SQLException("Updating message failed, no rows affected");
                 case 1: return true;
-                default: return false;
+                default: throw new SQLException("updateMessageById: affectedRows not equal to 0 or 1.");
             }
 
         } catch (SQLException e) {
@@ -141,8 +138,7 @@ public class MessageDAO {
         return false;
     }
 
-    public List<Message> getAllMessagesFromAccount(int posted_by) {
-        
+    public List<Message> getAllMessagesFromAccount(int posted_by) {   
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message where message.posted_by = ?";
@@ -158,6 +154,8 @@ public class MessageDAO {
                     rs.getLong("time_posted_epoch")
                 ));
             }
+            return messages;
+            
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

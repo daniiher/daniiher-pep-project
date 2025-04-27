@@ -70,9 +70,9 @@ public class SocialMediaController {
 
     private void postMessageHandler(Context ctx) throws JsonProcessingException {
         Message msg = om.readValue(ctx.body(), Message.class);
-        Integer message_id = messageService.postMessage(msg);
-        if (message_id != null) {
-            msg.setMessage_id(message_id);
+        Integer msg_id = messageService.postMessage(msg);
+        if (msg_id != null) {
+            msg.setMessage_id(msg_id);
             ctx.json(msg);
         }
         else ctx.status(400);
@@ -100,8 +100,8 @@ public class SocialMediaController {
     }
     private void getAllMessagesFromAccountHandler(Context ctx) throws JsonProcessingException {
         String posted_by_raw = ctx.pathParam("account_id");
-        List<Message> accMessages = messageService.getAllMessagesFromAccount(posted_by_raw);
-        if (accMessages != null) ctx.json(accMessages);
+        List<Message> accountMessages = messageService.getAllMessagesFromAccount(posted_by_raw);
+        ctx.json(accountMessages);
     }
 
 
