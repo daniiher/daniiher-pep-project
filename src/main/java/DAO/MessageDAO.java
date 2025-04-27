@@ -70,14 +70,12 @@ public class MessageDAO {
         return null;
     }
 
-    public Message getMessageById(int message_id) {
-        System.out.println("\n\ngetMessageById: message_id input:\n" + message_id + "\n\n");
-
+    public Message getMessageById(int msg_id) {
         try {
             Connection con = ConnectionUtil.getConnection();
             String sql = "select * from message where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, message_id);
+            ps.setInt(1, msg_id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Message msg = new Message(
@@ -86,13 +84,7 @@ public class MessageDAO {
                     rs.getString("message_text"),
                     rs.getLong("time_posted_epoch")
                 );
-                System.out.println("\n\ngetMessageById: new message:\n" + msg.toString() + "\n\n");
-                return msg; /*new Message(
-                    rs.getInt("message_id"),
-                    rs.getInt("posted_by"),
-                    rs.getString("message_text"),
-                    rs.getLong("time_posted_epoch")
-                ); */
+                return msg;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -126,16 +118,15 @@ public class MessageDAO {
         return null;
     }
 
-    public Boolean updateMessageById(Message msg) {
+    public Boolean updateMessageById(String msg_text, int msg_id) {
         
         try {
             Connection con = ConnectionUtil.getConnection();
-            String sql = "update message set message_text = ?, time_posted_epoch = ? where message_id = ?";
+            String sql = "update message set message_text = ? where message_id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, msg.message_text);
-            ps.setLong(2, msg.getTime_posted_epoch());
-            ps.setInt(3, msg.getMessage_id());
+            ps.setString(1, msg_text);
+            ps.setInt(2, msg_id);
 
             int affectedRows = ps.executeUpdate();
             switch (affectedRows) {

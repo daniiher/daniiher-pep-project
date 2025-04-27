@@ -41,15 +41,19 @@ public class MessageService {
         return messageDAO.deleteMessageById(id.intValue());
     }
 
-    public Boolean patchMessage(Message msg, String message_id_raw) {
-        System.out.print("\n\npatchMessage: msg: " + msg.toString() + "\n\n");
-        Integer id = Conversions.stringToInteger(message_id_raw);
-        if (id == null) return false;
-        if (msg.message_text.length() < 1 | msg.message_text.length() > 254) return false;
-        if ( (messageDAO.getMessageById(msg.getMessage_id())).getMessage_id() == 0 ) return false;
-        System.out.print("\n\npatchMessage: goto messageDAO\n");
-        msg.setMessage_id(id);
-        return messageDAO.updateMessageById(msg);
+    public Message patchMessage(String msg_text, String msg_id_raw) {
+        Integer msg_id = Conversions.stringToInteger(msg_id_raw);
+        if (msg_id == null || msg_id == 0) return null;
+        if (msg_text == null || msg_text.length() < 1 || msg_text.length() > 254) return null;
+        Message currentMsg = messageDAO.getMessageById(msg_id);
+        if (currentMsg == null) return null;
+        if (messageDAO.updateMessageById(msg_text, msg_id)) {
+            currentMsg.setMessage_id(msg_id);
+            currentMsg.setMessage_text(msg_text);
+            return currentMsg;
+        } else {
+            return null;
+        }
     }
 
     public List<Message> getAllMessagesFromAccount(String posted_by_raw) {
