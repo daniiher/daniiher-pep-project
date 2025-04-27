@@ -49,7 +49,6 @@ public class SocialMediaController {
 
     private void registerAccountHandler(Context ctx) throws JsonProcessingException {
         Account ac = om.readValue(ctx.body(), Account.class);
-        System.out.print("\n\nregisterAccountHandler::ac = \n" + ac.toString() + "\n\n");
         Integer account_id = accountService.registerAccount(ac);
         if (account_id != null) {
             ac.setAccount_id(account_id);

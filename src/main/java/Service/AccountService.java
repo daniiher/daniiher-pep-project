@@ -12,11 +12,9 @@ public class AccountService {
     }
 
     public Integer registerAccount(Account ac) {
-        System.out.print("\n\nregisterAccount(ac):\nac.username: " + ac.getUsername() + " \nas.password: " + ac.getPassword() + "\n\n");
         if (ac.username.length() < 1) return null;
         if (ac.password.length() < 5) return null;
         if (accountDAO.getAccountByUsername(ac.username) instanceof Account) {
-            System.out.print("\n\nservice.registerAccount::\n(accountDAO.getAccountByUsername() instance of Account) == true\nduplicate username -> return null;\n\n");
             return null;
         }
         return accountDAO.insertAccount(ac);
